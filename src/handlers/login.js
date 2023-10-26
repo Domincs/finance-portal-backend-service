@@ -15,6 +15,7 @@ const handler = (router, routesContext) => {
     );
 
     router.post('/login', async (ctx, next) => {
+        console.log('request received');
         const { username, password } = ctx.request.body;
         const opts = {
             method: 'POST',

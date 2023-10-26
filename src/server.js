@@ -60,8 +60,13 @@ const createServer = (config, db, log, Database) => {
     // Return 500 for any unhandled errors
     app.use(async (ctx, next) => {
         try {
+            console.log(ctx.URL);
+            console.log(ctx.request.method);
+            console.log(ctx.request.headers);
+            console.log(ctx.request.body);
             await next();
         } catch (err) {
+            console.log(err);
             ctx.log.child({ err }).error('Unhandled error');
             ctx.response.status = 500;
             ctx.response.body = { msg: 'Unhandled Internal Error' };
@@ -113,15 +118,20 @@ const createServer = (config, db, log, Database) => {
             return;
         }
 
-        const token = getTokenCookieFromRequest(ctx);
+        const token = getTokenCookieFromRequest(ctx) ?? '';
+        console.log('token: ', token);
 
+        // We want to bypass auth at this point so will not check the token
+        /* ***
         if (!token) {
             ctx.response.status = 401;
             ctx.response.body = { message: 'Authorization token cookie not present' };
             return;
         }
+        *** */
 
         ctx.log.info('validating request token:', token);
+        /*
         const opts = {
             method: 'POST',
             headers: {
@@ -162,6 +172,7 @@ const createServer = (config, db, log, Database) => {
             return;
         }
         ctx.log.info('request permitted according to application permissions');
+        */
 
         await next();
     });

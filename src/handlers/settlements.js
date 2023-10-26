@@ -5,15 +5,19 @@ const Model = casaLib.settlement.api;
 
 const handler = (router, routesContext) => {
     router.get('/settlements', async (ctx, next) => {
+        console.log('request received...');
         const {
             fromDateTime = routesContext.db.MYSQL_MIN_DATETIME, toDateTime =
             routesContext.db.MYSQL_MAX_DATETIME,
         } = qs.parse(ctx.request.querystring);
+        console.log('fromDateTime: ', fromDateTime);
         const api = new Model({ endpoint: routesContext.config.centralSettlementsEndpoint });
         // Central settlement service returns an HTTP 400 response in the case that there are no
         // settlements. The portal backend sanitises this response to an empty list.
         // The offending code is here: https://github.com/mojaloop/central-settlement/blob/45ecfe32d1039870aa9572e23747c24cd6d53c86/src/domain/settlement/index.js#L215
+        console.log('toDateTime: ', toDateTime);
         try {
+            console.log('calling get settlement');
             ctx.response.body = await api.getSettlements({ fromDateTime, toDateTime });
         } catch (err) {
             if (err?.constructor?.name === 'HTTPResponseError'
